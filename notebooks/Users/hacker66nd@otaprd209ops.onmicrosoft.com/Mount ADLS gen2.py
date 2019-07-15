@@ -25,11 +25,19 @@ dbutils.fs.mount(
 
 # COMMAND ----------
 
-# MAGIC %fs ls mnt/data/Raw/FourthCoffee/2019-07-15/
+# MAGIC %fs ls mnt/data/Raw/Southridge/2019-07-15/
 
 # COMMAND ----------
 
-df = spark.read.csv("dbfs:/mnt/data/Raw/FourthCoffee/2019-07-15/Actors.csv", header = "True")
+sdf = spark.read.csv("dbfs:/mnt/data/Raw/FourthCoffee/2019-07-15/Actors.csv", header = "True")
+
+# COMMAND ----------
+
+display(df)
+
+# COMMAND ----------
+
+df = spark.read.parquet("dbfs:/mnt/data/Raw/Southridge/2019-07-15/dbo_Addresses")
 
 # COMMAND ----------
 
