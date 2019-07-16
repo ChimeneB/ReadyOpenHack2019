@@ -68,11 +68,15 @@ sr_customer = sr_customer.withColumnRenamed("CustomerID", "SourceSystemCustomerI
 # COMMAND ----------
 
 # DBTITLE 1,Create a "CustomerID" alternate key
-from pyspark.sql.functions import regexp_extract, col
+#from pyspark.sql.functions import regexp_extract, col
 
-fc_customer = fc_customer.withColumn("CustomerId", regexp_extract("SourceSystemCustomerId", '(\d+)', 1))
-va_customer = va_customer.withColumn("CustomerId", regexp_extract("SourceSystemCustomerId", '(\d+)', 1))
-sr_customer = sr_customer.withColumn("CustomerId", regexp_extract("SourceSystemCustomerId", '(\d+)', 1))
+#fc_customer = fc_customer.withColumn("CustomerId", regexp_extract("SourceSystemCustomerId", '(\d+)', 1))
+#va_customer = va_customer.withColumn("CustomerId", regexp_extract("SourceSystemCustomerId", '(\d+)', 1))
+#sr_customer = sr_customer.withColumn("CustomerId", regexp_extract("SourceSystemCustomerId", '(\d+)', 1))
+
+fc_customer = fc_customer.withColumn("CustomerID", fc_customer["SourceSystemCustomerId"])
+va_customer = va_customer.withColumn("CustomerID", va_customer["SourceSystemCustomerId"])
+sr_customer = sr_customer.withColumn("CustomerID", sr_customer["SourceSystemCustomerId"])
 
 # COMMAND ----------
 
@@ -91,12 +95,16 @@ fc_customer.withColumn("ZipCode", fc_customer["ZipCode"].cast("string"))
 
 # COMMAND ----------
 
-# DBTITLE 1,Convert "CustomerId" to a Long data type
+# DBTITLE 1,Convert "CustomerId" & "PhoneNumber" to a Long data type
 from pyspark.sql.types import IntegerType
 
 fc_customer = fc_customer.withColumn("CustomerId", fc_customer["CustomerId"].cast(IntegerType()))
 va_customer = va_customer.withColumn("CustomerId", va_customer["CustomerId"].cast(IntegerType()))
 sr_customer = sr_customer.withColumn("CustomerId", sr_customer["CustomerId"].cast(IntegerType()))
+
+fc_customer = fc_customer.withColumn("PhoneNumber", fc_customer["PhoneNumber"].cast(IntegerType()))
+va_customer = va_customer.withColumn("PhoneNumber", va_customer["PhoneNumber"].cast(IntegerType()))
+sr_customer = sr_customer.withColumn("PhoneNumber", sr_customer["PhoneNumber"].cast(IntegerType()))
 
 # COMMAND ----------
 
@@ -125,3 +133,7 @@ customer.write.mode("overwrite").parquet("/mnt/data/Curated/Customers/2019-07-15
 
 # DBTITLE 1,Check the file write
 # MAGIC %fs ls mnt/data/Curated/Customers/2019-07-15/
+
+# COMMAND ----------
+
+#dbutils.fs.rm("/mnt/data/Curated/Customers/", True)
